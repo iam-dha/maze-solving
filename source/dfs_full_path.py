@@ -1,13 +1,14 @@
 import random
 from pyamaze import maze, agent
 
-def DFS(m):
+def DFS_with_full_path(m):
     start = (m.rows, m.cols)  # Điểm bắt đầu là góc dưới cùng bên phải
     goal = (1, 1)  # Điểm đích là góc trên cùng bên trái
 
     stack = [start]  # Sử dụng stack để duyệt DFS
     visited = set()  # Lưu trữ các ô đã thăm
-    path = {}  # Lưu trữ đường đi
+    path = {}  # Lưu trữ cha của mỗi ô
+    full_path = []  # Lưu trữ toàn bộ hành trình
 
     while stack:
         current = stack.pop()
@@ -15,6 +16,7 @@ def DFS(m):
             continue
 
         visited.add(current)
+        full_path.append(current)  # Ghi lại mỗi bước mà agent đi qua
 
         # Nếu đã đến đích
         if current == goal:
@@ -45,16 +47,22 @@ def DFS(m):
     while cell != start:
         fwd_path[path[cell]] = cell
         cell = path[cell]
-    return fwd_path
+
+    return fwd_path, full_path
 
 # Tạo mê cung và chạy DFS
 m = maze(5, 5)  # Tạo mê cung kích thước 5x5
 m.CreateMaze()
 
 # Tìm đường đi bằng DFS
-dfs_path = DFS(m)
+dfs_path, full_path = DFS_with_full_path(m)
 
-# Hiển thị kết quả
-a = agent(m, footprints=True)  # Tạo agent hiển thị dấu chân
-m.tracePath({a: dfs_path})  # Vẽ đường đi DFS
+# Hiển thị toàn bộ hành trình
+a = agent(m, footprints=True, color='blue')  # Tạo agent hiển thị dấu chân
+m.tracePath({a: full_path}, delay=100)  # Hiển thị toàn bộ hành trình (bao gồm thử sai)
+
+# Hiển thị đường đi tối ưu cuối cùng
+b = agent(m, footprints=True, color='green')  # Tạo agent hiển thị đường đi đúng
+m.tracePath({b: dfs_path}, delay=300)  # Hiển thị đường đi tối ưu
+
 m.run()

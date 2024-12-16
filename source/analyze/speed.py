@@ -1,3 +1,5 @@
+import matplotlib
+matplotlib.use('TkAgg')  # Hoặc 'QtAgg', 'Agg', tùy môi trường
 import matplotlib.pyplot as plt
 import seaborn as sns
 
